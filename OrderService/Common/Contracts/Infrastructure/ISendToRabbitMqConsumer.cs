@@ -1,7 +1,6 @@
 ﻿using OrderService.Data;
 using OrderService.Entities;
 using OrderService.Services.ServiceBus;
-
 using System.Text.Json;
 
 namespace OrderService.Common.Contracts.Infrastructure
@@ -10,16 +9,20 @@ namespace OrderService.Common.Contracts.Infrastructure
     {
         #region Methods
 
-        Task ProceedSendToConsumersDb(string message, string entityName, string referenceId, string appId, string exchange, string routKey, CancellationToken cancellationToken = default);
-        
+        Task ProceedSendToConsumersDb(string message, string entityName, string referenceId, string appId,
+            string exchange, string routKey, CancellationToken cancellationToken = default);
+
         #endregion Methods
     }
 
 
-    public class SendToRabbitMqConsumer(DataContext dbContext, IMessagesServiceBus messagesServiceBus) : ISendToRabbitMqConsumer
+    public class SendToRabbitMqConsumer(DataContext dbContext, IMessagesServiceBus messagesServiceBus)
+        : ISendToRabbitMqConsumer
     {
         #region Methods
-        public async Task ProceedSendToConsumersDb(string message, string entityName, string referenceId, string appId, string exchange, string routKey, CancellationToken cancellationToken = default)
+
+        public async Task ProceedSendToConsumersDb(string message, string entityName, string referenceId, string appId,
+            string exchange, string routKey, CancellationToken cancellationToken = default)
         {
             Dictionary<string, object> headers = new();
 
@@ -39,14 +42,9 @@ namespace OrderService.Common.Contracts.Infrastructure
             }, cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken);
 
-                messagesServiceBus.PublishToConsumerDb(message, exchange, routKey, headers);
-
+            messagesServiceBus.PublishToConsumerDb(message, exchange, routKey, headers);
         }
 
-
-
         #endregion Methods
-
-
     }
 }

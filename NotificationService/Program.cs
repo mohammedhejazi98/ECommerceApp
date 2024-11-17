@@ -6,7 +6,9 @@ using System.Threading.Channels;
 //Here we specify the Rabbit MQ Server. we use rabbitmq docker image and use it
 var factory = new ConnectionFactory
 {
-    HostName = "localhost"
+    HostName = "rabbitmq", // Use the actual IP address or a correct hostname
+    UserName = "guest", // Use your actual username
+    Password = "guest"  // Use your actual password
 };
 //Create the RabbitMQ connection using connection factory details as i mentioned above
 var connection = factory.CreateConnection();
@@ -34,4 +36,7 @@ consumer.Received += (model, eventArgs) => {
 };
 //read the message
 channel.BasicConsume(queue: queueName, autoAck: true, consumer: consumer);
-Console.ReadKey();
+while (true)
+{
+    
+}

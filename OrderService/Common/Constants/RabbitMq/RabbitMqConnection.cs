@@ -23,7 +23,10 @@ namespace OrderService.Common.Constants.RabbitMq
         {
             var factory = new ConnectionFactory
             {
-                HostName = _configuration["RabbitMQHost"],
+                HostName = "rabbitmq",
+                Port = 5673,
+                UserName = "guest",
+                Password = "guest"
 
             };
             _connection = factory.CreateConnection();

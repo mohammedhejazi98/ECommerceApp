@@ -19,7 +19,7 @@ builder.Services.AddSingleton<IMessagesServiceBus, MessagesServiceBus>();
 builder.Services.AddScoped<ISendToRabbitMqConsumer, SendToRabbitMqConsumer>();
 builder.Services.AddSingleton<IOrderEventProcessor, OrderEventProcessor>();
 
-RabbitMqConnection.Configure(builder.Configuration);
+// RabbitMqConnection.Configure(builder.Configuration);
 builder.Services.AddHostedService<OrderMessageSubscriber>();
 
 #region Register our context
@@ -32,12 +32,9 @@ builder.Services.AddDbContext<DataContext>(options =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
 
+app.UseSwagger();
+app.UseSwaggerUI();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

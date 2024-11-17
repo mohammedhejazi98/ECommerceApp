@@ -115,8 +115,15 @@ namespace InventoryService.BackgroundServices
             {
                 var exchange = "OrderEvents";
                 string queueName = "OrderEvents";
+            
+                var factory = new ConnectionFactory
+                { 
+                    HostName = "rabbitmq", // Use the actual IP address or a correct hostname
+                    UserName = "guest", // Use your actual username
+                    Password = "guest"  // Use your actual password
+                };
+                _connection =  factory.CreateConnection();
 
-                _connection = RabbitMqConnection.GetConnection();
                 _channel = _connection?.CreateModel();
                 _channel.ExchangeDeclare(exchange, ExchangeType.Fanout, true);
 

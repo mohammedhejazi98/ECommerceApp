@@ -44,7 +44,14 @@ namespace InventoryService.Services.ServiceBus
         }
         private void Connect(string exchangeName)
         {
-            _connection = RabbitMqConnection.GetConnection();
+            
+            var factory = new ConnectionFactory
+            { 
+                HostName = "rabbitmq", // Use the actual IP address or a correct hostname
+                UserName = "guest", // Use your actual username
+                Password = "guest"  // Use your actual password
+            };
+            _connection =  factory.CreateConnection();
             _channel = _connection?.CreateModel();
             _channel?.ConfirmSelect();
             _channel.ExchangeDeclare(exchangeName, ExchangeType.Fanout, true);

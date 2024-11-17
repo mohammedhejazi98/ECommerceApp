@@ -4,7 +4,7 @@ namespace InventoryService.Common.Constants.RabbitMq
 {
     public static class RabbitMqConnection
     {
-        private static IConnection? _connection;
+        private static IConnection _connection;
         private static IConfiguration _configuration;
 
         public static void Configure(IConfiguration configuration)
@@ -23,7 +23,10 @@ namespace InventoryService.Common.Constants.RabbitMq
         {
             var factory = new ConnectionFactory
             {
-                HostName = _configuration["RabbitMQHost"],
+                HostName = "rabbitmq",
+                Port = 5673,
+                UserName = "guest",
+                Password = "guest"
             };
             _connection = factory.CreateConnection();
         }

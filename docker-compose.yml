@@ -1,0 +1,51 @@
+version: "3.9"
+services:
+  inventoryservice:  # Changed to lowercase
+    build:
+      context: .
+      dockerfile: inventoryService/Dockerfile
+    container_name: inventoryservice
+    image: inventoryservice:latest  # Specify a lowercase image name
+    ports:
+      - "5001:5001"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+    depends_on:
+      - rabbitmq
+  
+  orderservice:  # Changed to lowercase
+    build:
+      context: .
+      dockerfile: orderservice/Dockerfile
+    container_name: orderservice
+    image: orderservice:latest  # Specify a lowercase image name
+    ports:
+      - "5000:5000"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+    depends_on:
+      - rabbitmq
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5673:5673"  # RabbitMQ message broker
+      - "15672:15672" # RabbitMQ management console
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  notificationservice:
+    image: notificationservice
+    build:
+      context: .
+      dockerfile: NotificationService/Dockerfile
+    ports:
+      - "5003:5003"
+
+
