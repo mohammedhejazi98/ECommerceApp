@@ -8,63 +8,29 @@ ECommerceApp is a microservices-based project consisting of three main services:
 2. **InventoryService**: Manages inventory levels and availability.
 3. **NotificationService**: Handles notifications related to orders and inventory.
 
-## Requirements
+## Cloning the Repository
 
-- .NET 8.0 SDK
-- Docker
-- Docker Compose
-
-## Building and Running the Solution
-
-### Using .NET CLI
-
-To build and run the solution locally:
+To clone the repository, run:
 
 ```sh
-dotnet build
-dotnet run --project OrderService/OrderService.csproj
-dotnet run --project InventoryService/InventoryService.csproj
-dotnet run --project NotificationService/NotificationService.csproj
+git clone https://github.com/mohammedhejazi98/ECommerceApp.git
+cd ECommerceApp
 ```
 
-### Using Docker and Docker Compose
+## Running the Solution Using Docker Compose
 
 Ensure Docker and Docker Compose are installed on your machine.
 
-#### Docker Setup
+### Docker Compose Setup
 
-Each service has its own Dockerfile, so you can build and run them individually using Docker.
-
-1. **OrderService**:
-    ```sh
-    docker build -t orderservice -f OrderService/Dockerfile .
-    docker run -d -p 5001:80 orderservice
-    ```
-
-2. **InventoryService**:
-    ```sh
-    docker build -t inventoryservice -f InventoryService/Dockerfile .
-    docker run -d -p 5002:80 inventoryservice
-    ```
-
-3. **NotificationService**:
-    ```sh
-    docker build -t notificationservice -f NotificationService/Dockerfile .
-    docker run -d -p 5003:80 notificationservice
-    ```
-
-Alternatively, you can manage all the services using Docker Compose.
-
-#### Docker Compose Setup
-
-1. Make sure you have a `docker-compose.yml` file configured for your services.
-2. To build and start all services defined in the `docker-compose.yml`:
+1. Make sure you are in the root directory of the cloned repository where the `docker-compose.yml` file is located.
+2. To build and start all services defined in the `docker-compose.yml`, run:
 
     ```sh
     docker-compose up --build
     ```
 
-3. To stop the services:
+3. To stop the services, run:
 
     ```sh
     docker-compose down
