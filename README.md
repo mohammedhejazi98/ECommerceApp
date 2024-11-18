@@ -41,7 +41,14 @@ Ensure Docker and Docker Compose are installed on your machine.
 - **InventoryService**: [http://localhost:5001/swagger/index.html](http://localhost:5001/swagger/index.html)
 - **OrderService**: [http://localhost:5002/swagger/index.html](http://localhost:5002/swagger/index.html)
 - **RabbitMQ Management Interface**: [http://localhost:15672/](http://localhost:15672/)
-- **RabbitMQ Credentials**: Username : guest , Password : guest
+- **RabbitMQ Credentials**: Username : `guest` , Password : `guest`
+### Accessing SQL Server
+
+To access the SQL Server used by the services, use the following credentials:
+
+- **Server Name**: `localhost,1433`
+- **Login**: `Sa`
+- **Password**: `P@ssw0rd158`
 
 ## Configuration
 
