@@ -41,6 +41,7 @@ Ensure Docker and Docker Compose are installed on your machine.
 - **InventoryService**: [http://localhost:5001/swagger/index.html](http://localhost:5001/swagger/index.html)
 - **OrderService**: [http://localhost:5002/swagger/index.html](http://localhost:5002/swagger/index.html)
 - **RabbitMQ Management Interface**: [http://localhost:15672/](http://localhost:15672/)
+- **RabbitMQ Credentials**: Username : guest , Password : guest
 
 ## Configuration
 
