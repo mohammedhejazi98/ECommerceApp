@@ -1,34 +1,57 @@
 version: "3.9"
 services:
-  inventoryservice:  # Changed to lowercase
+  inventoryservice:
     build:
       context: .
-      dockerfile: inventoryService/Dockerfile
+      dockerfile: InventoryService/Dockerfile
     container_name: inventoryservice
-    image: inventoryservice:latest  # Specify a lowercase image name
+    image: inventoryservice:latest
     ports:
       - "5001:5001"
     environment:
       ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: "http://+:5001"
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_PORT: 5672
+      CONNECTIONSTRINGS__DEFAULTCONNECTION: "Server=db;Database=InventoryDb;User=sa;Password=P@ssw0rd158;Integrated Security=false;MultipleActiveResultSets=true;encrypt=true;trustServerCertificate=true"
     depends_on:
       - rabbitmq
+      - db
   
-  orderservice:  # Changed to lowercase
+  orderservice:
     build:
       context: .
-      dockerfile: orderservice/Dockerfile
+      dockerfile: OrderService/Dockerfile
     container_name: orderservice
-    image: orderservice:latest  # Specify a lowercase image name
+    image: orderservice:latest
     ports:
-      - "5000:5000"
+      - "5002:5002"
     environment:
       ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: "http://+:5002"
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      CONNECTIONSTRINGS__DEFAULTCONNECTION: "Server=db;Database=OrderDb;User=sa;Password=P@ssw0rd158;Integrated Security=false;MultipleActiveResultSets=true;encrypt=true;trustServerCertificate=true"
+    depends_on:
+      - rabbitmq
+      - db
+
+  notificationservice:
+    build:
+      context: .
+      dockerfile: NotificationService/Dockerfile
+    container_name: notificationservice
+    image: notificationservice:latest
+    ports:
+      - "5003:5003"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: "http://+:5003"
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_PORT: 5672
     depends_on:
       - rabbitmq
+      - db
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -40,12 +63,11 @@ services:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
 
-  notificationservice:
-    image: notificationservice
-    build:
-      context: .
-      dockerfile: NotificationService/Dockerfile
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
     ports:
-      - "5003:5003"
-
-
+      - "1433:1433"
+    environment:
+      SA_PASSWORD: "P@ssw0rd158"
+      ACCEPT_EULA: "Y"

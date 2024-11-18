@@ -24,6 +24,11 @@ builder.Services.AddDbContext<DataContext>(options =>
 #endregion
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<DataContext>();
+    dbContext.Database.Migrate();  // This will apply any pending migrations
+}
 
 app.UseSwagger();
 app.UseSwaggerUI();
