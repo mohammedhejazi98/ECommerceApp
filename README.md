@@ -13,7 +13,7 @@ ECommerceApp is a microservices-based project consisting of three main services:
 To clone the repository, run:
 
 ```sh
-git clone https://github.com/mohammedhejazi98/ECommerceApp.git
+git clone https://github.com/your-username/ECommerceApp.git
 cd ECommerceApp
 ```
 
@@ -35,6 +35,12 @@ Ensure Docker and Docker Compose are installed on your machine.
     ```sh
     docker-compose down
     ```
+
+### Accessing Services
+
+- **InventoryService**: [http://localhost:5001/swagger/index.html](http://localhost:5001/swagger/index.html)
+- **OrderService**: [http://localhost:5002/swagger/index.html](http://localhost:5002/swagger/index.html)
+- **RabbitMQ Management Interface**: [http://localhost:15672/](http://localhost:15672/)
 
 ## Configuration
 
