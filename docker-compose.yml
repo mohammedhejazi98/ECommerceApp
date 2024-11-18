@@ -1,5 +1,26 @@
 version: "3.9"
 services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5673:5673"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    restart: on-failure
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    ports:
+      - "1433:1433"
+    environment:
+      SA_PASSWORD: "P@ssw0rd158"
+      ACCEPT_EULA: "Y"
+    restart: on-failure
+    
   inventoryservice:
     build:
       context: .
@@ -17,7 +38,8 @@ services:
     depends_on:
       - rabbitmq
       - db
-  
+    restart: on-failure
+
   orderservice:
     build:
       context: .
@@ -35,6 +57,7 @@ services:
     depends_on:
       - rabbitmq
       - db
+    restart: on-failure
 
   notificationservice:
     build:
@@ -52,22 +75,5 @@ services:
     depends_on:
       - rabbitmq
       - db
+    restart: on-failure
 
-  rabbitmq:
-    image: rabbitmq:3-management
-    container_name: rabbitmq
-    ports:
-      - "5673:5673"  # RabbitMQ message broker
-      - "15672:15672" # RabbitMQ management console
-    environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
-
-  db:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    container_name: sqlserver
-    ports:
-      - "1433:1433"
-    environment:
-      SA_PASSWORD: "P@ssw0rd158"
-      ACCEPT_EULA: "Y"

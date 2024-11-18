@@ -1,59 +1,75 @@
-﻿using InventoryService.Common.Contracts.Infrastructure;
-using InventoryService.Data;
-using InventoryService.Entities;
-
-using Microsoft.EntityFrameworkCore;
-
-using Newtonsoft.Json;
+﻿using InventoryService.Common.Contracts.Infrastructure; 
+using InventoryService.Data; 
+using InventoryService.Entities; 
+using Microsoft.EntityFrameworkCore; 
+using Newtonsoft.Json; 
 
 namespace InventoryService.EventProcessing;
 
-public class OrderEventProcessor(IServiceScopeFactory serviceScopeFactory) : IOrderEventProcessor
+/// <summary>
+/// The OrderEventProcessor class is responsible for processing order events received as messages.
+/// </summary>
+/// <remarks>
+/// It handles updating the product inventory based on the order details, and notifying consumers
+/// about the order processing result using RabbitMQ.
+/// </remarks>
+/// <param name="serviceScopeFactory">Factory to create service scopes for dependency injection.</param>
+public class OrderEventProcessor(IServiceScopeFactory serviceScopeFactory) : IOrderEventProcessor // class implementation
 {
     #region Methods
 
-    public async Task ProcessOrderEvent(string message)
+    /// <summary>
+    /// Processes the incoming order event message.
+    /// </summary>
+    /// <param name="message">The message containing order details.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    public async Task ProcessOrderEvent(string message) // asynchronous method to process order event
     {
-        using var scope = serviceScopeFactory.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<DataContext>();
-        var consumer = scope.ServiceProvider.GetRequiredService<ISendToRabbitMqConsumer>();
+        using var scope = serviceScopeFactory.CreateScope(); // create a scope using service scope factory
+        var dbContext = scope.ServiceProvider.GetRequiredService<DataContext>(); // get DataContext service
+        var consumer = scope.ServiceProvider.GetRequiredService<ISendToRabbitMqConsumer>(); // get RabbitMQ consumer service
 
-        var result = DeserializeMessage<Order>(message);
-        if (result is not null)
+        var result = DeserializeMessage<Order>(message); // deserialize message to Order object
+        if (result is not null) // check if result is not null
         {
-            var product = await dbContext.Products.Where(x => x.Id == result.ProductId).FirstOrDefaultAsync();
-            if (product is not null)
+            var product = await dbContext.Products.Where(x => x.Id == result.ProductId).FirstOrDefaultAsync(); // find product by Id
+            if (product is not null) // check if product is not null
             {
-                if (product.AvailableQuantity >= result.Quantity)
+                if (product.AvailableQuantity >= result.Quantity) // check if available quantity is sufficient
                 {
-                    product.AvailableQuantity -= result.Quantity;
-                    dbContext.Products.Update(product);
-                    await dbContext.SaveChangesAsync();
-                    Console.WriteLine("Inventory Updated");
+                    product.AvailableQuantity -= result.Quantity; // reduce available quantity
+                    dbContext.Products.Update(product); // update product in database
+                    await dbContext.SaveChangesAsync(); // save changes to database
+                    Console.WriteLine("Inventory Updated"); // log inventory update message
                     await consumer.ProceedSendToConsumersDb("Inventory Updated", nameof(Order), result.Id.ToString(),
-                        nameof(InventoryService), "OrderEventsNotify", "InventoryUpdated");
+                        nameof(InventoryService), "OrderEventsNotify",
+                        "InventoryUpdated"); // send success message to consumers
                 }
                 else
                 {
-                    Console.WriteLine($"Low Stock, available quantity ({product.AvailableQuantity}) in stock");
-                    await consumer.ProceedSendToConsumersDb($"Low Stock, available quantity ({product.AvailableQuantity}) in stock", nameof(Order), result.Id.ToString(),
-                        nameof(InventoryService), "OrderEventsNotify", "OutOfStock");
-
+                    await consumer.ProceedSendToConsumersDb(
+                        $"Low Stock Alert: Current available quantity is ({product.AvailableQuantity}).", nameof(Order),
+                        result.Id.ToString(), nameof(InventoryService), "OrderEventsNotify",
+                        "OutOfStock"); // send low stock alert to consumers
                 }
             }
             else
             {
-                Console.WriteLine("product not found");
-
+                Console.WriteLine("product not found"); // log product not found message
             }
         }
     }
 
-    private TMessage? DeserializeMessage<TMessage>(string message) where TMessage : class
+    /// <summary>
+    /// Deserializes a JSON string into an object of type TMessage.
+    /// </summary>
+    /// <typeparam name="TMessage">The type of the object to deserialize to.</typeparam>
+    /// <param name="message">The JSON string to deserialize.</param>
+    /// <returns>The deserialized object of type TMessage, or null if deserialization fails.</returns>
+    private TMessage? DeserializeMessage<TMessage>(string message) where TMessage : class // generic method to deserialize message
     {
-        return JsonConvert.DeserializeObject<TMessage>(message);
+        return JsonConvert.DeserializeObject<TMessage>(message); // return deserialized message
     }
 
-    #endregion Methods
-
+    #endregion Methods // end region for methods
 }
